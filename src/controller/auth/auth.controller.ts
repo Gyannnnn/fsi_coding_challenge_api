@@ -49,7 +49,7 @@ export const signUp = async (request: Request, response: Response) => {
         message: "Failed to create user",
       });
     }
-    const token = jwt.sign({ userEmail, userName }, process.env.JWT_SECRET!, {
+    const token = jwt.sign({ userEmail, userName,role:newUser.userRole }, process.env.JWT_SECRET!, {
       expiresIn: "30days",
     });
 
@@ -122,7 +122,7 @@ export const signIn = async (request: Request, response: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: existingUser.id, userEmail: existingUser.userEmail },
+      { userId: existingUser.id, userEmail: existingUser.userEmail ,role:existingUser.userRole},
       process.env.JWT_SECRET!,
       { expiresIn: "30d" }
     );
@@ -140,6 +140,7 @@ export const signIn = async (request: Request, response: Response) => {
         id: existingUser.id,
         userEmail: existingUser.userEmail,
         userName: existingUser.userName,
+        role:existingUser.userRole
       },
     });
   } catch (error) {

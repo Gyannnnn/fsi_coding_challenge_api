@@ -3,6 +3,7 @@ dotenv.config();
 import express from "express";
 import authRouter from "./routes/auth/auth.routes.js";
 import cors from "cors";
+import userRouter from "./routes/user/user.routes.js";
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -12,6 +13,7 @@ app.get("/", (req, res) => {
     });
 });
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Server is running @ http://localhost:${process.env.PORT || 3000}`);
 });
