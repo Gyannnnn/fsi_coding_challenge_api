@@ -5,12 +5,10 @@ const prisma = new PrismaClient();
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
 export const signUp = async (request: Request, response: Response) => {
-
   try {
     const schema = z.object({
-      userName: z.string().min(4),
+      userName: z.string().min(10).max(60),
       userEmail: z.string().email(),
       userPassword: z
         .string()
@@ -18,7 +16,9 @@ export const signUp = async (request: Request, response: Response) => {
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
           message:
             "Password must include uppercase, lowercase, number, and special character",
-        }),
+        })
+        .max(16),
+      userAddress: z.string().max(400),
     });
     const results = schema.safeParse(request.body);
     if (!results.success) {
@@ -27,7 +27,7 @@ export const signUp = async (request: Request, response: Response) => {
       });
       return;
     }
-    const { userEmail, userPassword, userName } = results.data;
+    const { userEmail, userPassword, userName, userAddress } = results.data;
     const hashedUserPassword = bcrypt.hashSync(userPassword, 10);
     const existingUser = await prisma.user.findUnique({ where: { userEmail } });
     if (existingUser) {
@@ -42,6 +42,7 @@ export const signUp = async (request: Request, response: Response) => {
         userEmail,
         userName,
         userPassword: hashedUserPassword,
+        userAddress,
       },
     });
     if (!newUser) {
@@ -49,9 +50,13 @@ export const signUp = async (request: Request, response: Response) => {
         message: "Failed to create user",
       });
     }
-    const token = jwt.sign({ userEmail, userName,role:newUser.userRole }, process.env.JWT_SECRET!, {
-      expiresIn: "30days",
-    });
+    const token = jwt.sign(
+      { userEmail, userName, role: newUser.userRole },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "30days",
+      }
+    );
 
     response.cookie("token", token, {
       httpOnly: true,
@@ -84,7 +89,8 @@ export const signIn = async (request: Request, response: Response) => {
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
           message:
             "Password must include uppercase, lowercase, number, and special character",
-        }),
+        })
+        .max(47),
     });
 
     const result = schema.safeParse(request.body);
@@ -122,7 +128,11 @@ export const signIn = async (request: Request, response: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: existingUser.id, userEmail: existingUser.userEmail ,role:existingUser.userRole},
+      {
+        userId: existingUser.id,
+        userEmail: existingUser.userEmail,
+        role: existingUser.userRole,
+      },
       process.env.JWT_SECRET!,
       { expiresIn: "30d" }
     );
@@ -140,7 +150,7 @@ export const signIn = async (request: Request, response: Response) => {
         id: existingUser.id,
         userEmail: existingUser.userEmail,
         userName: existingUser.userName,
-        role:existingUser.userRole
+        role: existingUser.userRole,
       },
     });
   } catch (error) {
@@ -152,3 +162,63 @@ export const signIn = async (request: Request, response: Response) => {
   }
 };
 
+export const updatePassword = async (req: Request, res: Response) => {
+  const { currentPassword, newPassword, userId } = req.body;
+  
+  if (
+    !currentPassword?.trim() ||
+    !newPassword?.trim() ||
+    !userId.trim()
+  ) {
+    res.status(401).json({
+      message: "All fields are required",
+    });
+    return;
+  }
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      res.status(401).json({
+        message: "No user found",
+      });
+      return;
+    }
+    const isMatch =  bcrypt.compareSync(
+      currentPassword,
+      user.userPassword
+    );
+    if (!isMatch) {
+      res.status(401).json({
+        message: "Invalid password",
+      });
+      return;
+    }
+    const hashedPassword = bcrypt.hashSync(
+      currentPassword,
+      10
+    );
+    const response = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        userPassword: hashedPassword,
+      },
+    });
+    if (!response) {
+      res.status(400).json({
+        message: "Failed to update password",
+      });
+    }
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({
+      message: "Internal srever error",
+      error: err.message,
+    });
+  }
+};

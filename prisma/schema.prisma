@@ -20,6 +20,43 @@ model user {
   userEmail    String   @unique
   userPassword String
   userRole     role     @default(user)
+  userAddress  String   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+
+  stores       store[]   @relation("storeOwner")
+  ratings      Rating[]
+
+}
+
+model store{
+  id           String       @id    @default(uuid())
+  storeName    String       
+  storeAddress String
+  averageRating Float    @default(0)
+  ratingCount   Int      @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  storeOwnerId  String
+  storeOwner    user         @relation("storeOwner",fields: [storeOwnerId],references: [id])
+  ratings       Rating[]
+  
+
+}
+
+
+model Rating{
+  id           String       @id     @default(uuid())
+  rating       Int 
+  storeId      String
+  userId       String
+
+
+  store        store        @relation(fields: [storeId],references: [id])
+  user         user         @relation(fields: [userId],references: [id])
+
+  @@unique([storeId,userId])
+
 }

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export const userAuthMiddleware = (
+export const userAuthValidation = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -9,7 +9,7 @@ export const userAuthMiddleware = (
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({
-      message: "Un authorised access",
+      message: "Unauthorised access",
     });
     return;
   }

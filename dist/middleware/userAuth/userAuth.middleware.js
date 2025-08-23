@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
-export const userAuthMiddleware = (req, res, next) => {
+export const userAuthValidation = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({
-            message: "Un authorised access",
+            message: "Unauthorised access",
         });
         return;
     }
