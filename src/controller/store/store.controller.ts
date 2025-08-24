@@ -117,3 +117,25 @@ export const getStoreDetails  = async(req: Request, res: Response)=>{
     }
 
 }
+
+
+export const getTotalStore = async (req: Request, res: Response) => {
+  try {
+    const totalusers = await prisma.store.count();
+    if (!totalusers) {
+      res.status(404).json({
+        message: "Failed to cound total stores",
+      });
+    }
+    res.status(200).json({
+      message: "Succeefully count the stores",
+      count: totalusers,
+    });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
+

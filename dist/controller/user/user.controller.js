@@ -105,7 +105,7 @@ export const getUser = async (req, res) => {
         const err = error;
         res.status(500).json({
             message: "Internal server error",
-            error: err.message
+            error: err.message,
         });
     }
 };
@@ -113,32 +113,73 @@ export const getUserDetails = async (req, res) => {
     const { userid } = req.params;
     if (!userid?.trim()) {
         res.status(400).json({
-            message: "All fields are requiered"
+            message: "All fields are requiered",
         });
         return;
     }
     try {
         const user = await prisma.user.findFirst({
             where: {
-                id: userid
-            }
+                id: userid,
+            },
         });
         if (!user) {
             res.status(400).json({
-                message: "No users found !"
+                message: "No users found !",
             });
             return;
         }
         res.status(200).json({
             message: "User details fetched successfully",
-            user
+            user,
         });
     }
     catch (error) {
         const err = error;
         res.status(500).json({
             message: "Internal server error",
-            error: err.message
+            error: err.message,
+        });
+    }
+};
+export const getTotalUsers = async (req, res) => {
+    try {
+        const totalusers = await prisma.user.count();
+        if (!totalusers) {
+            res.status(404).json({
+                message: "Failed to cound total users",
+            });
+        }
+        res.status(200).json({
+            message: "Succeefully count the users",
+            count: totalusers,
+        });
+    }
+    catch (error) {
+        const err = error;
+        res.status(500).json({
+            message: "Internal Server error",
+        });
+    }
+};
+export const getAllUsers = async (req, res) => {
+    try {
+        const allUsers = await prisma.user.findMany();
+        if (!allUsers || allUsers.length === 0) {
+            res.status(404).json({
+                message: "No Users Found",
+            });
+            return;
+        }
+        res.status(200).json({
+            message: "Users fetched successfully",
+        });
+    }
+    catch (error) {
+        const err = error;
+        res.status(500).json({
+            message: "Internal server error",
+            error: err.message,
         });
     }
 };

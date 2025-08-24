@@ -75,4 +75,55 @@ export const getAllStores = async (req, res) => {
         });
     }
 };
+export const getStoreDetails = async (req, res) => {
+    const { storeid } = req.params;
+    if (!storeid?.trim()) {
+        res.status(400).json({
+            message: "All fields are required"
+        });
+        return;
+    }
+    try {
+        const store = await prisma.store.findFirst({
+            where: {
+                id: storeid
+            }
+        });
+        if (!store) {
+            res.status(404).json({
+                message: "No store found"
+            });
+            return;
+        }
+        res.status(200).json({
+            message: `${store.storeName} details fetched successfully`
+        });
+    }
+    catch (error) {
+        const err = error;
+        res.status(500).json({
+            message: "Internal servere error"
+        });
+    }
+};
+export const getTotalStore = async (req, res) => {
+    try {
+        const totalusers = await prisma.store.count();
+        if (!totalusers) {
+            res.status(404).json({
+                message: "Failed to cound total stores",
+            });
+        }
+        res.status(200).json({
+            message: "Succeefully count the stores",
+            count: totalusers,
+        });
+    }
+    catch (error) {
+        const err = error;
+        res.status(500).json({
+            message: "Internal Server error",
+        });
+    }
+};
 //# sourceMappingURL=store.controller.js.map

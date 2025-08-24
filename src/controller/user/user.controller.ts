@@ -113,45 +113,85 @@ export const getUser = async (req: Request, res: Response) => {
       users,
     });
   } catch (error) {
-    const err = error as Error
+    const err = error as Error;
     res.status(500).json({
-        message: "Internal server error",
-        error:err.message
-    })
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };
 
+export const getUserDetails = async (req: Request, res: Response) => {
+  const { userid } = req.params;
+  if (!userid?.trim()) {
+    res.status(400).json({
+      message: "All fields are requiered",
+    });
+    return;
+  }
 
-export const getUserDetails = async(req: Request, res: Response)=>{
-    const {userid} = req.params
-    if(!userid?.trim()){
-        res.status(400).json({
-            message: "All fields are requiered"
-        });
-        return
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userid,
+      },
+    });
+    if (!user) {
+      res.status(400).json({
+        message: "No users found !",
+      });
+      return;
     }
+    res.status(200).json({
+      message: "User details fetched successfully",
+      user,
+    });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
 
-    try {
-        const user = await prisma.user.findFirst({
-            where:{
-                id:userid 
-            }
-        });
-        if(!user){
-            res.status(400).json({
-                message: "No users found !"
-            });
-            return
-        }
-        res.status(200).json({
-            message: "User details fetched successfully",
-            user
-        })
-    } catch (error) {
-        const err = error as Error
-        res.status(500).json({
-            message: "Internal server error",
-            error:err.message
-        })
+export const getTotalUsers = async (req: Request, res: Response) => {
+  try {
+    const totalusers = await prisma.user.count();
+    if (!totalusers) {
+      res.status(404).json({
+        message: "Failed to cound total users",
+      });
     }
-}
+    res.status(200).json({
+      message: "Succeefully count the users",
+      count: totalusers,
+    });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const allUsers = await prisma.user.findMany();
+    if (!allUsers || allUsers.length === 0) {
+      res.status(404).json({
+        message: "No Users Found",
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "Users fetched successfully",
+    });
+  } catch (error) {
+    const err = error as Error;
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
