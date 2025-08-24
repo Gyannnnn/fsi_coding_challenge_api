@@ -31,6 +31,7 @@ export const details = async(req: Request, res: Response)=>{
         const [users,stores] = await Promise.all([
             prisma.user.findMany({
                 select:{
+                    id:true,
                     userName:true,
                     userEmail:true,
                     userAddress:true,
@@ -39,6 +40,7 @@ export const details = async(req: Request, res: Response)=>{
             }),
             prisma.store.findMany({
                 select:{
+                    id:true,
                     storeName:true,
                     storeAddress:true,
                     averageRating:true,
