@@ -107,6 +107,11 @@ export const getStoreDetails = async (req: Request, res: Response) => {
         ratings: true,
       },
     });
+    const ratings = await prisma.rating.findMany({
+      where:{
+        storeId:storeid
+      }
+    })    
     if (!store) {
       res.status(404).json({
         message: "No store found",
@@ -116,6 +121,7 @@ export const getStoreDetails = async (req: Request, res: Response) => {
     res.status(200).json({
       message: `${store.storeName} details fetched successfully`,
       store,
+      ratings
     });
   } catch (error) {
     const err = error as Error;
