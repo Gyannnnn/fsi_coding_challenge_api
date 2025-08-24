@@ -107,7 +107,8 @@ export const getStoreDetails  = async(req: Request, res: Response)=>{
             return
         }
         res.status(200).json({
-            message: `${store.storeName} details fetched successfully`
+            message: `${store.storeName} details fetched successfully`,
+            store
         })
     } catch (error) {
         const err = error as Error
