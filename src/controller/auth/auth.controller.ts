@@ -132,6 +132,8 @@ export const signIn = async (request: Request, response: Response) => {
         userId: existingUser.id,
         userEmail: existingUser.userEmail,
         role: existingUser.userRole,
+        address: existingUser.userAddress,
+        name: existingUser.userName
       },
       process.env.JWT_SECRET!,
       { expiresIn: "30d" }
@@ -151,6 +153,7 @@ export const signIn = async (request: Request, response: Response) => {
         userEmail: existingUser.userEmail,
         userName: existingUser.userName,
         role: existingUser.userRole,
+        address: existingUser.userAddress
       },
     });
   } catch (error) {

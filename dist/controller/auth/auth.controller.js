@@ -110,6 +110,8 @@ export const signIn = async (request, response) => {
             userId: existingUser.id,
             userEmail: existingUser.userEmail,
             role: existingUser.userRole,
+            address: existingUser.userAddress,
+            name: existingUser.userName
         }, process.env.JWT_SECRET, { expiresIn: "30d" });
         response.cookie("token", token, {
             httpOnly: true,
@@ -124,6 +126,7 @@ export const signIn = async (request, response) => {
                 userEmail: existingUser.userEmail,
                 userName: existingUser.userName,
                 role: existingUser.userRole,
+                address: existingUser.userAddress
             },
         });
     }
