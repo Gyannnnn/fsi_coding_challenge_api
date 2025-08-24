@@ -5,7 +5,7 @@ import { cerateStore, getAllStores, getStoreDetails, getTotalStore } from "../..
 import { systemAdminAuthValidation } from "../../middleware/systemAdmin/systemAdmin.middlewarte.js";
 storeRouter.post("/create", storeAuthValidation, cerateStore);
 storeRouter.get("/all-stores", getAllStores);
-storeRouter.get("/get-store/:storeid", getStoreDetails);
+storeRouter.get("/get-store/:storeid", systemAdminAuthValidation, getStoreDetails);
 storeRouter.get("/store-cont", systemAdminAuthValidation, getTotalStore);
 export default storeRouter;
 //# sourceMappingURL=store.router.js.map

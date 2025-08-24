@@ -9,6 +9,7 @@ app.use(cors());
 import userRouter from "./routes/user/user.routes.js";
 import storeRouter from "./routes/store/store.router.js";
 import ratingRouter from "./routes/rating/rating.routes.js";
+import dashBoardRouter from "./routes/dashBoard/dashboard.routes.js";
 app.get("/", (req, res) => {
     res.status(200).json({
         message: "Welcome to developer challange api",
@@ -18,6 +19,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/store", storeRouter);
 app.use("/api/v1/rating", ratingRouter);
+app.use("/api/v1/dashboard", dashBoardRouter);
 app.listen(process.env.PORT || 3000, () => {
     console.log(`Server is running @ http://localhost:${process.env.PORT || 3000}`);
 });

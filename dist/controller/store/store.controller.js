@@ -19,12 +19,12 @@ export const cerateStore = async (req, res) => {
     try {
         const isStoreExist = await prisma.store.findFirst({
             where: {
-                storeName
-            }
+                storeName,
+            },
         });
         if (isStoreExist) {
             res.status(409).json({
-                message: `${storeName} already exists`
+                message: `${storeName} already exists`,
             });
             return;
         }
@@ -43,7 +43,7 @@ export const cerateStore = async (req, res) => {
         }
         res.status(200).json({
             message: `${storeName} store created successfully`,
-            response
+            response,
         });
     }
     catch (error) {
@@ -59,19 +59,19 @@ export const getAllStores = async (req, res) => {
         const stores = await prisma.store.findMany();
         if (!stores || stores.length === 0) {
             res.status(401).json({
-                message: "No stores found"
+                message: "No stores found",
             });
         }
         res.status(200).json({
             message: "Stores fetched successfully",
-            stores: stores
+            stores: stores,
         });
     }
     catch (error) {
         const err = error;
         res.status(500).json({
             message: "Internal server",
-            error: err.message
+            error: err.message,
         });
     }
 };
@@ -79,30 +79,57 @@ export const getStoreDetails = async (req, res) => {
     const { storeid } = req.params;
     if (!storeid?.trim()) {
         res.status(400).json({
-            message: "All fields are required"
+            message: "All fields are required",
         });
         return;
     }
     try {
         const store = await prisma.store.findFirst({
             where: {
-                id: storeid
-            }
+                id: storeid,
+            },
+            select: {
+                id: true,
+                storeName: true,
+                storeAddress: true,
+                averageRating: true,
+                ratingCount: true,
+                createdAt: true,
+                updatedAt: true,
+                storeOwnerId: true,
+                storeOwner: true,
+                ratings: true,
+            },
+        });
+        const ratings = await prisma.rating.findMany({
+            where: {
+                storeId: storeid,
+            },
+            select: {
+                id: true,
+                rating: true,
+                storeId: true,
+                userId: true,
+                store: true,
+                user: true,
+            },
         });
         if (!store) {
             res.status(404).json({
-                message: "No store found"
+                message: "No store found",
             });
             return;
         }
         res.status(200).json({
-            message: `${store.storeName} details fetched successfully`
+            message: `${store.storeName} details fetched successfully`,
+            store,
+            ratings,
         });
     }
     catch (error) {
         const err = error;
         res.status(500).json({
-            message: "Internal servere error"
+            message: "Internal servere error",
         });
     }
 };

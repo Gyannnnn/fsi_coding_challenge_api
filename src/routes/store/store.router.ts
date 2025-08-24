@@ -11,7 +11,7 @@ import { systemAdminAuthValidation } from "../../middleware/systemAdmin/systemAd
 
 storeRouter.post("/create",storeAuthValidation,cerateStore);
 storeRouter.get("/all-stores",getAllStores);
-storeRouter.get("/get-store/:storeid",getStoreDetails);
+storeRouter.get("/get-store/:storeid",systemAdminAuthValidation,getStoreDetails);
 storeRouter.get("/store-cont",systemAdminAuthValidation,getTotalStore);
 
 
