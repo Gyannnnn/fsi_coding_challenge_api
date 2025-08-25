@@ -3,7 +3,7 @@ import { PrismaClient } from "../../../generated/prisma/index.js";
 const prisma = new PrismaClient();
 export const cerateStore = async (req, res) => {
     const schema = z.object({
-        storeName: z.string().min(20).max(60),
+        storeName: z.string().min(10).max(60),
         storeAddress: z.string().min(5).max(400),
         storeOwnerId: z.cuid(),
     });
