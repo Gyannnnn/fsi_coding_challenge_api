@@ -18,7 +18,7 @@ export const userAuthValidation = (
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     const role = decoded.role as string;
 
-    if (role === "user" || "storeOwner" || "systemAdmin") {
+    if (role === "user" || role === "storeOwner" || role === "systemAdmin") {
         req.user = decoded
       next();
     } else {
